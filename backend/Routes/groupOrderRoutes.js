@@ -2,6 +2,29 @@ const express = require("express");
 const router = express.Router();
 const GroupOrder = require("../models/GroupOrder");
 
+router.post("/create", async (req, res) => {
+  try {
+    const { userId, restaurantId, totalAmount } = req.body;
+
+    const groupOrder = new GroupOrder({
+      createdBy: userId,
+      restaurant: restaurantId,
+      totalAmount,
+      members: [],
+    });
+
+    await groupOrder.save();
+
+    // Generate the shareable link using the group order's ID
+    const groupOrderLink = `https://goFood.com/group-order/${groupOrder._id}`;
+
+    res.status(201).json({ groupOrder, groupOrderLink });
+  } catch (error) {
+    res.status(500).json({ message: "Error creating group order", error });
+  }
+});
+
+
 // Route to create a new group order
 router.post("/create", async (req, res) => {
     try {
