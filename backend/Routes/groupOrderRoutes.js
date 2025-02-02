@@ -24,27 +24,6 @@ router.post("/create", async (req, res) => {
   }
 });
 
-
-// Route to create a new group order
-router.post("/create", async (req, res) => {
-    try {
-        const { createdBy, restaurant, totalAmount } = req.body;
-
-        const groupOrder = new GroupOrder({
-            createdBy,
-            restaurant,
-            totalAmount,
-            members: [],
-        });
-
-        await groupOrder.save();
-        res.status(201).send(groupOrder);
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send("Server Error");
-    }
-});
-
 // Route to join an existing group order
 router.post("/join/:orderId", async (req, res) => {
     try {
