@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 
 const SplitPayment = ({ groupOrderId, userId }) => {
   const [groupOrder, setGroupOrder] = useState(null);
@@ -10,8 +9,12 @@ const SplitPayment = ({ groupOrderId, userId }) => {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const res = await axios.get(`/api/groupOrder/${groupOrderId}`);
-        setGroupOrder(res.data);
+        const response = await fetch(`/api/groupOrder/${groupOrderId}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setGroupOrder(data);
       } catch (error) {
         console.error("Error fetching group order:", error);
       }
@@ -29,8 +32,20 @@ const SplitPayment = ({ groupOrderId, userId }) => {
 
     setLoading(true);
     try {
-      const res = await axios.post(`/api/groupOrder/pay/${groupOrderId}/${userId}`, { amount });
-      setGroupOrder(res.data);
+      const response = await fetch(`/api/groupOrder/pay/${groupOrderId}/${userId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Payment failed with status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setGroupOrder(data);
       alert("Payment successful!");
     } catch (error) {
       console.error("Payment error:", error);
