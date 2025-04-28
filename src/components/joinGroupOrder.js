@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 
 const JoinGroupOrder = () => {
   const { groupOrderId } = useParams();  // Extract ID from URL
@@ -9,8 +8,14 @@ const JoinGroupOrder = () => {
   useEffect(() => {
     const fetchGroupOrder = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/group-order/${groupOrderId}`);
-        setGroupOrder(response.data);
+        const response = await fetch(`http://localhost:5000/api/group-order/${groupOrderId}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setGroupOrder(data);
       } catch (error) {
         console.error("Error fetching group order", error);
       }
