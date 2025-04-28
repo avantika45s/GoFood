@@ -1,20 +1,31 @@
 import React, { useState } from "react";
-import axios from "axios";
 
 const GroupOrder = () => {
   const [groupOrderLink, setGroupOrderLink] = useState("");
 
   const createGroupOrder = async () => {
     try {
-      const response = await axios.post("http://localhost:5000/api/group-order/create", {
-        userId: "USER_ID_HERE",
-        restaurantId: "RESTAURANT_ID_HERE",
-        totalAmount: 500,  // Example total amount
+      const response = await fetch("http://localhost:5000/api/group-order/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          userId: "USER_ID_HERE",
+          restaurantId: "RESTAURANT_ID_HERE",
+          totalAmount: 500  // Example total amount
+        })
       });
 
-      setGroupOrderLink(response.data.groupOrderLink);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setGroupOrderLink(data.groupOrderLink);
+      
     } catch (error) {
-      console.error("Error creating group order", error);
+      console.error("Error creating group order:", error);
     }
   };
 
